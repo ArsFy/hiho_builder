@@ -36,27 +36,63 @@
         <h1>悲報生成器</h1>
         <a href="https://t.me/noyacgchannel/387" target="_blank">萬惡之源</a>
         <p>
-            誰的: <input type="text" id="w1" placeholder="示例: 阿威" />
-            物品: <input type="text" id="w2" placeholder="示例: 全新電話" />
-            簡稱: <input type="text" id="w3" placeholder="示例: 電話" />
-            稱呼: <input type="text" id="w4" placeholder="示例: 機" />
+            誰的: <input onblur="changePreview()" type="text" id="w1" placeholder="示例: 阿威" />
+            物品: <input onblur="changePreview()" type="text" id="w2" placeholder="示例: 全新電話" />
+            簡稱: <input onblur="changePreview()" type="text" id="w3" placeholder="示例: 電話" />
+            稱呼: <input onblur="changePreview()" type="text" id="w4" placeholder="示例: 機" />
         </p>
         <textarea rows="10" id="text"></textarea>
         <button onclick="run()">生成</button> <button onclick="copy()">拷貝</button>
     </div>
 
     <script>
-        const run = () => {
-            let w1 = document.getElementById("w1");
-            let w2 = document.getElementById("w2");
-            let w3 = document.getElementById("w3");
-            let w4 = document.getElementById("w4");
-            if (w1.value != "" && w2.value != "" && w3.value != "") {
-                let time = new Date();
-                document.getElementById("text").value = `【悲報】\n今天我們懷着十分沉痛的心情深切悼念${w1.value}的${w2.value}。\n${w3.value}同志的逝世，使${w1.value}同志失去了他的${w3.value}，它離我們而去，但它那種勤勤懇懇、忘我工作的奉獻精神；那種艱苦樸素，勤儉節約的優良作風；那種為${w4.value}正派，忠厚老實的高尚品德，仍值得我們學習和記取。\n${w3.value}同志，您安息吧！\n${time.getFullYear()}年${time.getMonth() + 1}月${time.getDate()}日 ${time.getHours()}:${time.getMinutes()}`
-            } else {
-                alert("不能為空")
+        function getDefaultInput() {
+            return {
+                w1: "阿威",
+                w2: "全新電話",
+                w3: "電話",
+                w4: "機"
             }
+        }
+        function addZero(i) {
+            if (i < 10)
+                i = "0" + i
+            return i
+        }
+
+        function formatTime(date) {
+            return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${addZero(date.getHours())}:${addZero(date.getMinutes())}`
+        }
+
+        function getTemplate({
+            w1,
+            w2,
+            w3,
+            w4
+        }) {
+            return `【悲報】
+                    今天我們懷着十分沉痛的心情深切悼念${w1}的${w2}。
+                    ${w3}同志的逝世，使${w1}同志失去了他的${w3}，它離我們而去，但它那種勤勤懇懇、忘我工作的奉獻精神；那種艱苦樸素，勤儉節約的優良作風：
+                    那種為${w4}正派，忠厚老實的高尚品德，仍值得我們學習和記取。
+                    ${w3}同志，您安息吧！
+
+                    ${formatTime(new Date())}`.replaceAll("    ", "")
+        }
+
+        const getInputValue = () => {
+            let w1 = document.getElementById("w1").value || "{阿威}";
+            let w2 = document.getElementById("w2").value || "{全新電話}";
+            let w3 = document.getElementById("w3").value || "{電話}";
+            let w4 = document.getElementById("w4").value || "{機}";
+            return { w1, w2, w3, w4 };
+        }
+
+        const changePreview = () => {
+            document.getElementById("text").setAttribute("placeholder", getTemplate(getInputValue()));
+        }
+
+        const run = () => {
+            document.getElementById("text").value = getTemplate(getInputValue());
         }
 
         const copy = () => {
@@ -64,6 +100,8 @@
             document.execCommand('copy');
             alert("Copied!");
         }
+
+        changePreview()
     </script>
 
 </body>
